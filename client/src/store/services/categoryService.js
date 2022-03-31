@@ -8,6 +8,7 @@ const categoryService = createApi({
         prepareHeaders: (headers, {getState}) => {
             const reducers = getState();
             const token = reducers?.authReducer?.adminToken;
+            console.log(token)
             headers.set('authorization', token ? `Bearer ${token}` : '');
             return headers;
         }
@@ -24,6 +25,25 @@ const categoryService = createApi({
                },
                invalidatesTags: ['categories']
            }),
+           updateCategory: builder.mutation({
+               query: (data) => {
+                  return {
+                      url: `update-category/${data.id}`,
+                      method: 'PUT',
+                      body: {name: data.name}
+                  }
+               },
+               invalidatesTags: ['categories']
+           }),
+           deleteCategory: builder.mutation({
+               query: (id) => {
+                   return {
+                       url: `delete-category/${id}`,
+                       method: 'DELETE'
+                   }
+               },
+               invalidatesTags: ['categories']
+           }),
            get: builder.query({
                query: (page) => {
                    return {
@@ -32,9 +52,18 @@ const categoryService = createApi({
                    }
                },
                providesTags: ['categories']
+           }),
+           fetchCategory: builder.query({
+               query: (id) => {
+                 return {
+                     url: `fetch-category/${id}`,
+                     method: 'GET'
+                 }
+               },
+               providesTags: ['categories']
            })
        }
     }
 });
-export const {useCreateMutation, useGetQuery} = categoryService
+export const {useCreateMutation, useGetQuery, useFetchCategoryQuery, useUpdateCategoryMutation, useDeleteCategoryMutation} = categoryService
 export default categoryService
