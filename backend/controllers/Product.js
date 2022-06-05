@@ -1,5 +1,6 @@
 const formidable = require('formidable');
 const {v4: uuidv4 } = require("uuid")
+const {validationResult} = require("express-validator")
 const fs = require("fs");
 const path = require("path");
 const ProductModel = require("../models/ProductModel");
@@ -100,6 +101,53 @@ class Product {
      } catch (error) {
          console.log(error.message);
      }
+   }
+   async getProduct(req, res) {
+      const {id} = req.params;
+      try {
+         const product = await ProductModel.findOne({_id: id}).select(['-image1', "-image2", "-image3"]);
+         return res.status(200).json(product);
+      } catch (error) {
+         return res.status(500).json({error: error.message})
+         console.log(error.message);
+      }
+   }
+   async updateProduct(req, res) {
+      const errors = validationResult(req);
+      if(errors.isEmpty()) {
+         try {
+            const {_id, title, price, discount, stock, colors, sizes, description, category} = req.body;
+            const response = await ProductModel.updateOne({_id}, {$set: {title, price, discount, stock, category, colors, sizes, description}})
+            return res.status(200).json({msg: 'Product has updated', response})
+         } catch (error) {
+            console.log(error)
+            return res.status(500).json({errors: error})
+         }
+      } else {
+         return res.status(400).json({errors: errors.array()});
+      }
+   }
+   async deleteProduct(req, res) {
+      const {id} = req.params;
+      try {
+         const product = await ProductModel.findOne({_id: id});
+         [1,2,3].forEach((number) => {
+            let key = `image${number}`;
+            console.log(key)
+            let image = product[key];
+            let __dirname = path.resolve();
+            let imagePath = __dirname + `/../client/public/images/${image}`
+            fs.unlink(imagePath, (err) => {
+               if(err) {
+                  throw new Error(err);
+               }
+            });
+         })
+         await ProductModel.findByIdAndDelete(id);
+         return res.status(200).json({msg: 'Product has been deleted successfully'})
+      } catch (error) {
+         throw new Error(error.message)
+      }
    }
 }
 module.exports = new Product;
