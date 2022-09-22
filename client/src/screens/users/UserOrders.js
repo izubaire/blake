@@ -5,16 +5,21 @@ import Nav from "../../components/home/Nav";
 import Header from "../../components/home/Header";
 import AccountList from "../../components/home/AccountList";
 import Spinner from "../../components/Spinner";
-import { useGetOrdersQuery } from "../../store/services/userOrdersService";
+import {
+  useGetOrdersQuery,
+  useReceivedOrderMutation,
+} from "../../store/services/userOrdersService";
 import { discount } from "../../utils/discount";
 import Pagination from "../../components/Pagination";
 const UserOrders = () => {
   let { page } = useParams();
   page = page ? page : 1;
   const { user } = useSelector((state) => state.authReducer);
-  console.log(user);
   const { data, isFetching } = useGetOrdersQuery({ page, userId: user.id });
-  console.log(data);
+  const [updateOrder, response] = useReceivedOrderMutation();
+  const orderReceived = (id) => {
+    updateOrder(id);
+  };
   return (
     <>
       <Nav />
@@ -36,12 +41,9 @@ const UserOrders = () => {
                           <tr className="thead-tr">
                             <th className="th">image</th>
                             <th className="th">name</th>
-                            <th className="th">color</th>
-
-                            <th className="th">price</th>
-                            <th className="th">quantities</th>
                             <th className="th">total</th>
                             <th className="th">details</th>
+                            <th className="th">received</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -67,32 +69,28 @@ const UserOrders = () => {
                                 <td className=" td font-medium">
                                   {item.productId.title}
                                 </td>
-                                <td className="td">
-                                  <span
-                                    className="block w-[15px] h-[15px] rounded-full"
-                                    style={{ backgroundColor: item.color }}
-                                  ></span>
-                                </td>
-
-                                <td className="td font-bold text-gray-900">
-                                  {currency.format(
-                                    discount(
-                                      item.productId.price,
-                                      item.productId.discount
-                                    ),
-                                    {
-                                      code: "USD",
-                                    }
-                                  )}
-                                </td>
-                                <td className="td font-semibold">
-                                  {item.quantities}
-                                </td>
                                 <td className="td font-bold ">{total}</td>
                                 <td className="td">
-                                  <Link to="/" className="btn btn-indigo">
+                                  <Link
+                                    to={`/user-order-details/${item._id}`}
+                                    className="btn btn-indigo"
+                                  >
                                     details
                                   </Link>
+                                </td>
+                                <td className="td">
+                                  {item.received ? (
+                                    <span className="capitalize font-medium text-emerald-600">
+                                      received
+                                    </span>
+                                  ) : (
+                                    <button
+                                      className="btn btn-indigo"
+                                      onClick={() => orderReceived(item._id)}
+                                    >
+                                      received?
+                                    </button>
+                                  )}
                                 </td>
                               </tr>
                             );
