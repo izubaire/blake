@@ -9,7 +9,7 @@ const Sidebar = ({ side, closeSidebar }) => {
         onClick={closeSidebar}
       ></i>
       <div className="bg-white p-4">
-        <img src="/logo.svg" alt="logo" />
+        <h1 class="font-bold text-2xl lowercase font-poppins tracking-widest">Blake</h1>
       </div>
       <ul className="mt-4">
         <li className="px-4 cursor-pointer transition-all py-3 text-white flex items-center hover:bg-gray-600">

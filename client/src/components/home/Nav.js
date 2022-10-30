@@ -17,7 +17,7 @@ const Nav = () => {
         <div className="my-container">
           <div className="flex justify-between items-center">
             <Link to="/">
-              <img src="/logo.svg" className="h-full object-cover" alt="logo" />
+              <h1 class="font-bold text-2xl lowercase font-poppins tracking-widest">Blake</h1>
             </Link>
             <ul className="flex items-center">
               <li className="nav-li cursor-pointer">
