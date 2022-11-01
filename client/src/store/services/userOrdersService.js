@@ -4,7 +4,7 @@ const userOrdersService = createApi({
   reducerPath: "user-orders",
   tagTypes: "orders",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:5000/api/",
+    baseUrl: process.env.REACT_APP_BACKEND_URL + "/api/",
     prepareHeaders: (headers, { getState }) => {
       const reducers = getState();
       const token = reducers?.authReducer?.userToken;
